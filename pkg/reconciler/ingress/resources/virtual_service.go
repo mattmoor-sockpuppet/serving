@@ -84,6 +84,12 @@ func MakeIngressVirtualService(ia v1alpha1.IngressAccessor, gateways map[v1alpha
 
 // MakeMeshVirtualService creates a mesh Virtual Service
 func MakeMeshVirtualService(ia v1alpha1.IngressAccessor) *v1alpha3.VirtualService {
+	hosts := getHosts(ia)
+	if ia.GetSpec().Visibility == v1alpha1.IngressVisibilityClusterLocal {
+		hosts = expandedHosts(hosts)
+	} else {
+		hosts = keepLocalHostnames(hosts)
+	}
 	vs := &v1alpha3.VirtualService{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:            names.MeshVirtualService(ia),
@@ -94,7 +100,7 @@ func MakeMeshVirtualService(ia v1alpha1.IngressAccessor) *v1alpha3.VirtualServic
 		Spec: *makeVirtualServiceSpec(ia, map[v1alpha1.IngressVisibility]sets.String{
 			v1alpha1.IngressVisibilityExternalIP:   sets.NewString("mesh"),
 			v1alpha1.IngressVisibilityClusterLocal: sets.NewString("mesh"),
-		}, keepLocalHostnames(getHosts(ia))),
+		}, hosts),
 	}
 	// Populate the ClusterIngress labels.
 
