@@ -23,9 +23,6 @@ import (
 	"log"
 	"time"
 
-	deploymentinformer "knative.dev/pkg/injection/informers/kubeinformers/appsv1/deployment"
-	sksinformer "knative.dev/serving/pkg/client/injection/informers/networking/v1alpha1/serverlessservice"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/google/mako/helpers/go/quickstore"
 	qpb "github.com/google/mako/helpers/proto/quickstore/quickstore_go_proto"
