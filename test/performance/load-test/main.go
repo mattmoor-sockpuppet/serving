@@ -21,6 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -31,6 +32,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"knative.dev/pkg/controller"
 	"knative.dev/pkg/injection"
+	"knative.dev/pkg/injection/clients/kubeclient"
 	"knative.dev/pkg/signals"
 	pkgpacers "knative.dev/pkg/test/vegeta/pacers"
 	netv1alpha1 "knative.dev/serving/pkg/apis/networking/v1alpha1"
@@ -141,10 +143,10 @@ func main() {
 	}
 
 	// Get the Kubernetes version from the API server.
-	// version, err := kubeclient.Get(ctx).Discovery().ServerVersion()
-	// if err != nil {
-	// 	log.Fatalf("Failed to fetch kubernetes version: %v", err)
-	// }
+	version, err := kubeclient.Get(ctx).Discovery().ServerVersion()
+	if err != nil {
+		log.Fatalf("Failed to fetch kubernetes version: %v", err)
+	}
 
 	// We cron every 10 minutes, so give ourselves 6 minutes to complete.
 	ctx, cancel := context.WithTimeout(ctx, 6*time.Minute)
@@ -163,8 +165,9 @@ func main() {
 		Tags: []string{
 			"master",
 			fmt.Sprintf("tbc=%s", *flavor),
-			// TODO(Fredy-Z): uncomment after we solve the tag issue
-			// fmt.Sprintf("kubernetes=%s", version),
+			// The format of version.String() is like "v1.13.7-gke.8",
+			// since Mako does not allow . in tags, replace them with _
+			fmt.Sprintf("kubernetes=%s", strings.ReplaceAll(version.String(), ".", "_")),
 		},
 	}, mako.SidecarAddress)
 	if err != nil {
