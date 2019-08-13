@@ -73,8 +73,10 @@ func processResults(ctx context.Context, q *quickstore.Quickstore, results <-cha
 		serving.ServiceLabelKey: fmt.Sprintf("load-test-%s", *flavor),
 	})
 
+	ctx, cancel := context.WithCancel(ctx)
 	deploymentStatus := metrics.FetchDeploymentStatus(ctx, "default", selector, time.Second)
 	sksMode := metrics.FetchSKSMode(ctx, "default", selector, time.Second)
+	defer cancel()
 
 	for {
 		select {
