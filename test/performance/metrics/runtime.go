@@ -49,6 +49,7 @@ func FetchDeploymentStatus(
 	startTick(duration, ctx.Done(), func(t time.Time) error {
 		// Overlay the desired and ready pod counts.
 		deployments, err := dl.Deployments(namespace).List(selector)
+		dl.Deployments(namespace)
 		if err != nil {
 			log.Printf("Error listing deployments: %v", err)
 			return err

@@ -34,7 +34,7 @@ import (
 // DeploymentInformer provides access to a shared informer and lister for
 // Deployments.
 type DeploymentInformer interface {
-	Informer() cache.SharedIndexInformer
+	Informer() cache.SharedIndexInformer.AddEventHandler()
 	Lister() v1.DeploymentLister
 }
 
