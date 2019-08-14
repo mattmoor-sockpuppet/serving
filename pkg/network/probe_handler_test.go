@@ -19,19 +19,20 @@ package network
 import (
 	"context"
 	"fmt"
-	_ "knative.dev/pkg/system/testing"
-	"knative.dev/serving/pkg/network/prober"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	_ "knative.dev/pkg/system/testing"
+	"knative.dev/serving/pkg/network/prober"
 )
 
 func TestProbeHandlerSuccessfulProbe(t *testing.T) {
 	body := "Inner Body"
-	cases := []struct{
-		name string
+	cases := []struct {
+		name    string
 		options []interface{}
-		want bool
+		want    bool
 	}{{
 		name: "successful probe when both headers are specified",
 		options: []interface{}{
@@ -39,7 +40,7 @@ func TestProbeHandlerSuccessfulProbe(t *testing.T) {
 			prober.WithHeader(HashHeaderName, "foo-bar-baz"),
 		},
 		want: true,
-	},{
+	}, {
 		name: "forwards to inner handler when probe header is not specified",
 		options: []interface{}{
 			prober.WithHeader(HashHeaderName, "foo-bar-baz"),
@@ -48,7 +49,7 @@ func TestProbeHandlerSuccessfulProbe(t *testing.T) {
 			prober.ExpectsHeader(HashHeaderName, "false"),
 		},
 		want: true,
-	},{
+	}, {
 		name: "forwards to inner handler when probe header is not 'probe'",
 		options: []interface{}{
 			prober.WithHeader(ProbeHeaderName, "queue"),
@@ -59,7 +60,7 @@ func TestProbeHandlerSuccessfulProbe(t *testing.T) {
 			prober.ExpectsHeader(HashHeaderName, "false"),
 		},
 		want: true,
-	},{
+	}, {
 		name: "failed probe when hash header is not present",
 		options: []interface{}{
 			prober.WithHeader(ProbeHeaderName, ProbeHeaderValue),
@@ -67,7 +68,7 @@ func TestProbeHandlerSuccessfulProbe(t *testing.T) {
 		want: false,
 	}}
 
-	var h  http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	var h http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, ok := r.Header[ProbeHeaderName]
 		w.Header().Set(ProbeHeaderName, fmt.Sprintf("%t", ok))
 		_, ok = r.Header[HashHeaderName]
