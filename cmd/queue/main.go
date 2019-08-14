@@ -31,7 +31,7 @@ import (
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
-	zipkin "github.com/openzipkin/zipkin-go"
+	"github.com/openzipkin/zipkin-go"
 	"github.com/pkg/errors"
 	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/stats"
@@ -388,6 +388,7 @@ func main() {
 		composedHandler = pushRequestMetricHandler(composedHandler, requestCountM, responseTimeInMsecM, env)
 	}
 	composedHandler = tracing.HTTPSpanMiddleware(composedHandler)
+	composedHandler = network.NewProbeHandler(composedHandler)
 	server := network.NewServer(":"+strconv.Itoa(env.QueueServingPort), composedHandler)
 
 	adminMux := http.NewServeMux()
