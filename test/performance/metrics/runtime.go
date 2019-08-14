@@ -55,12 +55,11 @@ func FetchDeploymentStatus(
 		}
 
 		for _, d := range deployments {
-			ds := DeploymentStatus{
+			ch <- DeploymentStatus{
 				DesiredReplicas: *d.Spec.Replicas,
 				ReadyReplicas:   d.Status.ReadyReplicas,
 				Time:            t,
 			}
-			ch <- ds
 		}
 		return nil
 	})
@@ -90,11 +89,10 @@ func FetchSKSMode(
 			return err
 		}
 		for _, sks := range skses {
-			skss := ServerlessServiceStatus{
+			ch <- ServerlessServiceStatus{
 				Mode: sks.Spec.Mode,
 				Time: t,
 			}
-			ch <- skss
 		}
 		return nil
 	})
