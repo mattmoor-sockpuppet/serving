@@ -59,7 +59,7 @@ func ExpectsBody(body string) Verifier {
 
 // ExpectsHeader validates that a header of the probe response matches the provided string.
 func ExpectsHeader(name, value string) Verifier {
-	return func(r *http.Response, b []byte) (bool, error) {
+	return func(r *http.Response, _ []byte) (bool, error) {
 		return r.Header.Get(name) == value, nil
 	}
 }
