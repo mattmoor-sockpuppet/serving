@@ -41,10 +41,12 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if hh := r.Header.Get(HashHeaderName); hh == "" {
+	hh := r.Header.Get(HashHeaderName)
+	if hh == "" {
 		http.Error(w, fmt.Sprintf("a probe request must contain a non-empty %q header", HashHeaderName), http.StatusBadRequest)
-	} else {
-		w.Header().Set(HashHeaderName, hh)
-		w.WriteHeader(200)
+		return
 	}
+
+	w.Header().Set(HashHeaderName, hh)
+	w.WriteHeader(200)
 }
